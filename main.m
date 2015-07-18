@@ -30,7 +30,9 @@ static CMTime RefreshRateForDisplayID(CGDirectDisplayID displayID) {
   assert(_session = [[AVCaptureSession alloc] init]);
   assert(input = [[AVCaptureScreenInput alloc] initWithDisplayID:displayID]);
   input.cropRect = rect;
+  #if 0
   input.scaleFactor = 1.0/[screen backingScaleFactor];
+  #endif
   input.minFrameDuration = RefreshRateForDisplayID(displayID);
   assert(_output = [[AVCaptureMovieFileOutput alloc] init]);
   assert([_session canAddInput:input]);
