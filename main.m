@@ -45,8 +45,9 @@ static CMTime RefreshRateForDisplayID(CGDirectDisplayID displayID) {
 
 - (void)stop:(BOOL)blockUntilStopped {
   [_output stopRecording];
-  while (_session) // nil'd when file output complete
-    [[NSRunLoop mainRunLoop] runUntilDate:[NSDate distantPast]];
+  if (blockUntilStopped)
+    while (_session) // nil'd when file output complete
+      [[NSRunLoop mainRunLoop] runUntilDate:[NSDate distantPast]];
 }
 
 - (void)captureOutput:(AVCaptureFileOutput *)captureOutput
@@ -54,9 +55,11 @@ didFinishRecordingToOutputFileAtURL:(NSURL *)outputFileURL
       fromConnections:(NSArray *)connections
                 error:(NSError *)error {
   if (error) NSLog(@"%@", error);
-  [_session stopRunning];
-  _session = nil;
-  _output = nil;
+  dispatch_async(dispatch_get_main_queue(), ^{
+    [_session stopRunning];
+    _session = nil;
+    _output = nil;
+  });
 }
 
 @end
